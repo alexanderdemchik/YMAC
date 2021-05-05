@@ -9,7 +9,9 @@ import { PlaylistsBlock } from './PlaylistsBlock';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1, 
+    flexGrow: 1,
+    position: 'relative',
+    overflow: 'hidden'
   },
 }));
 

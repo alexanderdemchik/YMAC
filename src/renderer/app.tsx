@@ -11,6 +11,7 @@ import { MainLayout } from './layouts/MainLayout';
 import { getUserInfo } from './redux/user';
 import { SplashScreen } from './components/splashscreen/SplashScreen';
 import { initialize } from './redux/app';
+import { play } from './redux/player';
 
 const styles = (theme: Theme) => ({
   '@global': {
@@ -20,10 +21,23 @@ const styles = (theme: Theme) => ({
     },
     body: {
       height: '100%',
+      overflow: 'hidden',
       margin: 0,
+    },
+    'button': {
+      '&:disabled': {
+        fill: theme.palette.action.disabled,
+        '& svg': {
+          fill: theme.palette.action.disabled,
+        }
+      }
     },
     '#root': {
       height: '100%',
+      userSelect: 'none',
+      '& img': {
+        '-webkit-user-drag': 'none'
+      }
     },
     '*::-webkit-scrollbar': {
       width: 11,

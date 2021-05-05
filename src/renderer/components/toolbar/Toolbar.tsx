@@ -90,7 +90,6 @@ const useStyles = makeStyles((theme) => ({
 const Toolbar = () => {
   const classes = useStyles();
   const ipc = useRef(new Ipc()); 
-  const webview = useRef(null);
   const maximized = useSelector((state: RootState) => state.toolbar.maximized);
   const dispatch: AppDispatch = useDispatch();
 

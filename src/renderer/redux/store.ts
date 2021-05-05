@@ -5,6 +5,7 @@ import toolbar from './toolbar';
 import login from './login';
 import sidebar from './sidebar';
 import home from './home';
+import player from './player';
 
 const store = configureStore({
   reducer: combineReducers({
@@ -12,7 +13,8 @@ const store = configureStore({
     toolbar,
     login,
     sidebar,
-    home
+    home,
+    player
   }),
   devTools: process.env.NODE_ENV === 'development'
 });

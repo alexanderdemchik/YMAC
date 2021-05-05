@@ -54,7 +54,6 @@ export const Search = () => {
 
   return (
     <div className={classes.root}>
-      <Spacer inSearch />
       {
         isXs ? (
           <div className={classes.searchXs}>
@@ -69,7 +68,6 @@ export const Search = () => {
           </div>
         )
       }
-      
     </div>
   );
 }

@@ -8,11 +8,9 @@ export const initialize = () => async (dispatch: ThunkDispatch<unknown, unknown,
 
   const getUserInfoResult = await dispatch(getUserInfo());
 
-  console.log(getUserInfoResult);
   if (getUserInfoResult.payload) {
     history.push('/main');
   } else {
-    console.log('a')
     history.push('/login');
   }
 }

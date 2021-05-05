@@ -11,7 +11,7 @@ export const handleLogin = createAsyncThunk(
   'login',
   async (_, { dispatch, rejectWithValue }) => {
     dispatch(setLoading(true));
-    const cookies: {name: string, value: string}[]  = (await ipc.invoke('getCookies', YANDEX_REDIRECT_URL));
+    const cookies: {name: string, value: string}[] = (await ipc.invoke('getCookies', YANDEX_REDIRECT_URL));
 
     const sid = cookies.find(el => el.name === COOKIES_SESSION_ID_KEY)?.value;
 

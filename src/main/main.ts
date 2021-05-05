@@ -35,8 +35,8 @@ async function onReady() {
   })
 
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1400,
+    height: 900,
     frame: false,
     resizable: true,
     backgroundColor: '#fff',

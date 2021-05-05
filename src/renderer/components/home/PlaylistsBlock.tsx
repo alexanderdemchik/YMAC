@@ -1,7 +1,9 @@
-import { makeStyles, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import React, { useRef } from 'react';
-import { useGesture } from 'react-use-gesture';
-import { LandingBlock, LandingBlockEntity, PersonalPlaylistEntityData } from '../../api/yandex';
+import { useDrag } from 'react-use-gesture';
+import { PlaylistsBlockEntity } from './PlaylistsBlockEntity';
+import { useDispatch } from 'react-redux';
+import { playPlaylist } from '../../redux/player';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -54,30 +56,23 @@ const useStyles = makeStyles((theme) => ({
     padding: '5px',
   }
 }));
-
 interface PlaylistsBlockProps {
-  block: LandingBlock,
-  showAllHandler?: (block: LandingBlock) => void
-}
-
-const COVER_SIZE = '400x400';
-
-const getCoverUrl = (data: PersonalPlaylistEntityData['data']) => {
- let url;
- if (data.animatedCoverUri) {
-  url = data.animatedCoverUri;
- } else {
-  url = data.cover.uri;
- }
- return 'http://' + url.replace('%%', COVER_SIZE);
+  block: Yandex.LandingBlock,
+  showAllHandler?: (block: Yandex.LandingBlock) => void
 }
 
 export const PlaylistsBlock = ({ block, showAllHandler } : PlaylistsBlockProps) => {
   const classes = useStyles();
-  const carouselRef = useRef(null);
-  const gesture = useGesture(({ down, delta: [xDelta], direction: [xDir], distance, cancel }) => {
-    console.log(xDelta)
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const carouselGesture = useDrag(({down, delta: [deltaX], ...state}) => {
+    if (down) {
+      if (carouselRef.current != null) {
+        carouselRef.current.scrollLeft = carouselRef.current.scrollLeft - deltaX;
+      }
+    }
   });
+  const dispatch = useDispatch();
+
   return (
     <div className={classes.root}>
       <div className={classes.header}>
@@ -89,15 +84,13 @@ export const PlaylistsBlock = ({ block, showAllHandler } : PlaylistsBlockProps) 
           {showAllHandler && <span onClick={() => showAllHandler(block)}>Show all</span>}
         </div>
       </div>
-      <div className={classes.carousel} ref={carouselRef}>
+      <div className={classes.carousel} ref={carouselRef} {...carouselGesture()}>
         {
           block.entities.map(entity => {
             const data = entity.data.data;
             return (
-              <div className={classes.carouselItem} {...gesture()}>
-                <div>
-                  <img src={getCoverUrl(data)} width='100%' />
-                </div>
+              <div className={classes.carouselItem}>
+                <PlaylistsBlockEntity entity={entity} onPlayClick={() => { dispatch(playPlaylist({ uid: data.uid, kind: data.kind }))}}/>
               </div>
             )
           })

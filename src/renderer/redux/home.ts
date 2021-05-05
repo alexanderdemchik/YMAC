@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getHomeLandingData, LandingBlock, LandingBlockEntity } from '../api/yandex';
+import { getHomeLandingData } from '../api/yandex';
 
 
 export const getHomeData = createAsyncThunk(
@@ -21,7 +21,7 @@ export const getHomeData = createAsyncThunk(
 
 interface HomeState {
   loading: boolean,
-  blocks: LandingBlock[]
+  blocks: Yandex.LandingBlock[]
 }
 
 const homeSlice = createSlice({
@@ -34,7 +34,7 @@ const homeSlice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
-    setBlocks: (state, action: PayloadAction<LandingBlock[]>) => {
+    setBlocks: (state, action: PayloadAction<Yandex.LandingBlock[]>) => {
       state.blocks = action.payload;
     }
   },

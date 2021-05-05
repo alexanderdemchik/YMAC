@@ -7,7 +7,7 @@ import { RootState } from '../../redux/store';
 const useStyles = makeStyles((theme) => ({
   spacer: {
     width: SIDEBAR_WIDTH,
-    transition: 'width .2s ease-out'
+    transition: 'width .2s ease-out, min-width .2s ease-out',
   }
 }));
 
@@ -15,7 +15,7 @@ interface SpacerProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLD
   inSearch?: boolean
 }
 
-export const Spacer = ({className, inSearch = false, ...props}: SpacerProps) => {
+export const Spacer = ({className, ...props}: SpacerProps) => {
   const classes = useStyles();
   const { collapsed } = useSelector((state: RootState) => state.sidebar);
   const isXs = useMediaQuery<Theme>(theme=> theme.breakpoints.down('xs'));
@@ -24,13 +24,13 @@ export const Spacer = ({className, inSearch = false, ...props}: SpacerProps) => 
   const spacerWidth = () => {
     if (collapsed) {
       if (isXs) {
-        return !inSearch ? HIDDEN_SIDEBAR_WIDTH : COLLAPSED_SIDEBAR_WIDTH;
+        return HIDDEN_SIDEBAR_WIDTH;
       } else {
         return COLLAPSED_SIDEBAR_WIDTH;
       }
     } else {
       if (isXs) {
-        return !inSearch ? HIDDEN_SIDEBAR_WIDTH : COLLAPSED_SIDEBAR_WIDTH;
+        return HIDDEN_SIDEBAR_WIDTH;
       } else if (isSm) {
         return COLLAPSED_SIDEBAR_WIDTH;
       }

@@ -12,10 +12,12 @@ const useStyles = makeStyles((theme) => ({
 
 interface IconButtonProps extends ButtonBaseProps {}
 
-export const IconButton = ({children, className = '', ...props}: IconButtonProps) => {
+export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(({children, className = '', ...props}, ref) => {
   const classes = useStyles();
 
-  return <ButtonBase className={`${classes.root} ${className}`}>
-    {children}
-  </ButtonBase>
-}
+  return (
+    <ButtonBase className={`${classes.root} ${className}`} {...props} ref={ref}>
+      {children}
+    </ButtonBase>
+  );
+});

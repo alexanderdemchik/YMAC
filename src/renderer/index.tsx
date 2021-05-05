@@ -14,4 +14,6 @@ axios.interceptors.request.use(config => {
   return config;
 });
 
+axios.defaults.headers.common['X-Yandex-Music-Client'] = 'WindowsPhone/4.45';
+
 ReactDOM.render(<App />, document.getElementById('root'));

@@ -8,10 +8,10 @@ export default createMuiTheme({
     },
     type: 'dark',
     primary: {
-      main: '#2196f3',
+      main: '#FFCC00',
       light: 'rgb(77, 171, 245)',
       dark: 'rgb(23, 105, 170)',
-      contrastText: '#fff',
+      contrastText: '#000',
     },
     secondary: {
       main: '#f50057',

@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import * as YandexAPI from '../api/yandex';
+
 export const getUserInfo = createAsyncThunk(
   'getUserInfo',
   async (_, { dispatch, rejectWithValue }) => {

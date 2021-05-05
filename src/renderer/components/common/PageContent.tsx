@@ -7,7 +7,10 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 78,
     height: 'calc(100vh - 78px - 56px)',
     overflow: 'auto',
-    marginBottom: 56
+    marginBottom: 56,
+    maxWidth: 1400,
+    marginLeft: 'auto',
+    marginRight: 'auto'
   }
 }));
 
