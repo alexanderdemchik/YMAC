@@ -4,6 +4,7 @@ const spawn = require('cross-spawn');
 const chalk = require('chalk');
 const {debounce, killAll} = require('./utils');
 const config = require('../webpack.electron.config.js');
+const chokidar = require('chokidar');
 
 const compiler = webpack({...config, mode: 'development'});
 
@@ -23,7 +24,7 @@ async function run() {
   electron.stdout.pipe(process.stdout);
   electron.stderr.pipe(process.stderr);
 
-  fs.watch('src/main', {encoding: 'utf-8'}, debounce(async () => {
+  chokidar.watch(['src/main', 'src/common']).on('change', debounce(async () => {
     console.log('restart due changes...');
     killAll(electron.pid);
     try {

@@ -1,11 +1,14 @@
 import 'source-map-support/register';
 import { app, BrowserWindow, protocol, session, ipcMain } from 'electron';
-import logger from './logger';
+import logger from '../common/logger';
 import path from 'path';
 import { EXTENSIONS_FOLDER, REACT_DEV_TOOLS_FOLDER, REDUX_DEV_TOOLS_FOLDER } from './constants';
+import * as db from '../common/database';
+import { getUserDataPath } from '../common/utils';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 
+app.allowRendererProcessReuse = false
 const lock = app.requestSingleInstanceLock()
 
 // allow only one instance
@@ -24,6 +27,8 @@ process.on('uncaughtException', function (error) {
 });
 
 async function onReady() {
+  await db.init();
+ 
   protocol.registerFileProtocol('file', (request, cb) => {
     const url = request.url.replace('file:///', '');
     const decodedUrl = decodeURI(url)
@@ -53,6 +58,10 @@ async function onReady() {
 
   ipcMain.handle('getCookies', async (event, url) => {
     return await session.defaultSession.cookies.get({ url });
+  });
+
+  ipcMain.handle('getUserDataPath', async () => {
+    return getUserDataPath();
   });
 
 

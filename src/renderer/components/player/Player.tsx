@@ -4,7 +4,7 @@ import { throttle } from 'lodash';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { convertUri } from '../../api/yandex';
-import { pause, play, playNext, setVolume } from '../../redux/player';
+import { pause, play, playNext, setMuted, setVolume } from '../../redux/player';
 import { RootState } from '../../redux/store';
 import { IconButton } from '../common/IconButton';
 import { Image } from '../common/Image';
@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
 export const Player = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { playing, played, buffered, history, current, volume } = useSelector((state: RootState) => state.player);
+  const { playing, played, buffered, history, current, volume, muted } = useSelector((state: RootState) => state.player);
 
   const setVolumeThrottled = useCallback(throttle((val) => {dispatch(setVolume(val))}, 100), [dispatch]); // throttle volume change to avoid a lot of rerenders
 
@@ -132,7 +132,7 @@ export const Player = () => {
         <IconButton>
           <QueueMusicSharp />
         </IconButton>
-        <Volume volume={volume} setVolume={setVolumeThrottled} />
+        <Volume volume={volume} setVolume={setVolumeThrottled} muted={muted} setMuted={(val) => dispatch(setMuted(val))} />
       </div>
     </div>
   )

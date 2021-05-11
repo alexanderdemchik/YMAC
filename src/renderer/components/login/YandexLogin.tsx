@@ -1,10 +1,9 @@
 import { makeStyles } from '@material-ui/core';
-import React, { useEffect, useRef, useCallback, useState } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AUTH_URL as YANDEX_OAUTH_URL, REDIRECT_URL as YANDEX_REDIRECT_URL } from '../../constants/yandex';
 import { handleLogin } from '../../redux/login';
 import { RootState } from '../../redux/store';
-import { Ipc } from '../../utils/Ipc';
 import { CircleDotSpinner } from '../spinners/CircleDotSpinner';
 import Toolbar from '../toolbar/Toolbar';
 
@@ -33,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
 
 export const YandexLogin = () => {
   const classes = useStyles();
-  const ipc = useRef(new Ipc());
   const webviewRef = useRef<Electron.WebviewTag>(null);
   const { loading, error } = useSelector((state: RootState) => state.login);
   const dispatch = useDispatch();

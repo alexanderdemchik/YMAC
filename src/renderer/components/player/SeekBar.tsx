@@ -3,6 +3,7 @@ import { useSpring } from 'react-spring';
 import React, { useRef, useState } from 'react';
 import { useDrag } from 'react-use-gesture';
 import { seekTo } from '../../redux/player';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,7 +40,8 @@ interface SeekBarProps {
 
 export const SeekBar = ({ progress = 0, buffered = 0 } : SeekBarProps) => {
   const [seek, setSeek] = useState<number | null>(null);
-  
+  const dispatch = useDispatch();
+
   const ref = useRef<HTMLDivElement>(null);
   const classes = useStyles();
 
@@ -48,7 +50,7 @@ export const SeekBar = ({ progress = 0, buffered = 0 } : SeekBarProps) => {
       const value = x / ref.current.clientWidth;
       setSeek(value < 0 ? 0 : value > 1 ? 1 : value);
     } else {
-      seekTo(seek as number);
+      dispatch(seekTo(seek as number));
       setSeek(null);
     }
   });

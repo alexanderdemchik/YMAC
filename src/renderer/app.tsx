@@ -3,14 +3,14 @@ import { YandexLogin } from './components/login/YandexLogin';
 import { ThemeProvider, withStyles, CssBaseline, Theme } from '@material-ui/core';
 import dark from './themes/dark';
 import { Provider, useDispatch } from 'react-redux';
-import store from './redux/store';
+import store, { AppDispatch } from './redux/store';
 import { Router, Route, Switch } from 'react-router-dom';
 import './index.css';
 import history from './history';
 import { MainLayout } from './layouts/MainLayout';
 import { getUserInfo } from './redux/user';
 import { SplashScreen } from './components/splashscreen/SplashScreen';
-import { initialize } from './redux/app';
+import { checkAuth, initialInitialization, initializationAfterLogin } from './redux/app';
 import { play } from './redux/player';
 
 const styles = (theme: Theme) => ({
@@ -57,15 +57,24 @@ const styles = (theme: Theme) => ({
 });
 
 const App = withStyles(styles)(() => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
-  const initialization = () => {
-    dispatch(initialize());
+  const initialization = async () => {
+    await dispatch(initialInitialization());
+    const authenticated = await dispatch(checkAuth());
+
+    if (authenticated) {
+      await dispatch(initializationAfterLogin());
+      history.push('/main');
+    } else {
+      history.push('/login');
+    }
   }
 
   useEffect(() => {
     initialization();
   }, []);
+
   return (
     <Switch>
       <Route path='/' component={SplashScreen} exact/>

@@ -40,15 +40,20 @@ module.exports = {
   devServer: {
     historyApiFallback: true,
     compress: true,
-    hot: true,
+    hot: false,
     port: process.env.PORT,
     publicPath: '/',
+    inline: true,
     overlay: true
   },
   output: {
     path: path.resolve(__dirname, './build'),
     filename: 'bundle.js',
     publicPath: './',
+  },
+  externals: {
+    sqlite3: 'commonjs sqlite3',
+    typeorm: 'commonjs typeorm'
   },
   plugins: [
     new HtmlWebpackPlugin({

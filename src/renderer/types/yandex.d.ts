@@ -97,12 +97,14 @@ namespace Yandex {
     animatedCoverUri: string,
     ogImage: string,
     durationMs: number,
+    revision: string,
     cover: {
       type: string,
       dir: string,
       version: string,
-      uri: string,
-      custom: boolean
+      uri?: string,
+      custom: boolean,
+      itemsUri?: string[]
     },
     playCounter: {
       value: number,
@@ -146,5 +148,18 @@ namespace Yandex {
     ts: string,
     path: string,
     host: string
+  }
+  interface TinyTrack {
+    id: string,
+    albumId: string,
+    timestamp: string
+  }
+
+  interface LikesResponse {
+    library: {
+      uid: number,
+      revision: number,
+      tracks: TinyTrack[]
+    }
   }
 }

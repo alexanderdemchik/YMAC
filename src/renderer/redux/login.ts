@@ -4,11 +4,12 @@ import { COOKIES_SESSION_ID_KEY, REDIRECT_URL as YANDEX_REDIRECT_URL } from '../
 import { Ipc } from '../utils/Ipc';
 import history from '../history';
 import { getUserInfo } from './user';
+import { initializationAfterLogin } from './app';
 
 const ipc = new Ipc();
 
 export const handleLogin = createAsyncThunk(
-  'login',
+  'handleLogin',
   async (_, { dispatch, rejectWithValue }) => {
     dispatch(setLoading(true));
     const cookies: {name: string, value: string}[] = (await ipc.invoke('getCookies', YANDEX_REDIRECT_URL));
@@ -24,7 +25,8 @@ export const handleLogin = createAsyncThunk(
       localStorage.setItem('expiresIn', data.expires_in.toString());
 
       await dispatch(getUserInfo());
-      
+      await dispatch(initializationAfterLogin());
+
       history.push('/main');
     } else {
       rejectWithValue({});

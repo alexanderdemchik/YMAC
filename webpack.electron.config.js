@@ -26,9 +26,11 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "./build"),
     filename: 'main.js',
-    clean: true
   },
-  externals: [/node_modules/, 'bufferutil', 'utf-8-validate'],
+  externals: {
+    sqlite3: 'commonjs sqlite3',
+    typeorm: 'commonjs typeorm'
+  },
   plugins: [
     new ContextReplacementPlugin(/any-promise/),
     new DefinePlugin(env)

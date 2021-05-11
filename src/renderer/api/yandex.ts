@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CLIENT_ID, CLIENT_SECRET, HOST, OAUTH_TOKEN_URL, SESSIONID_GRANT_TYPE, LOGIN_INFO_URL, HOME_LANDING_URL, PERSONAL_PLAYLIST_URL, DOWNLOAD_INFO_URL, SIGNATURE_KEY, DIRECT_LINK_URL } from '../constants/yandex';
+import { CLIENT_ID, CLIENT_SECRET, HOST, OAUTH_TOKEN_URL, SESSIONID_GRANT_TYPE, LOGIN_INFO_URL, HOME_LANDING_URL, PERSONAL_PLAYLIST_URL, DOWNLOAD_INFO_URL, SIGNATURE_KEY, DIRECT_LINK_URL, PLAYLISTS_LIST_URL, PLAYLISTS_URL, TRACKS_URL, LIKES_URL } from '../constants/yandex';
 import crypto from 'crypto';
 
 export const getTokenBySessionId = async (sid: string) => {
@@ -48,11 +48,38 @@ export const getDirectLink = async (trackId: number) => {
   return DIRECT_LINK_URL(drinfo.host, sign, drinfo.ts, drinfo.path);
 }
 
-
 export const convertUri = (uri?: string, size: number = 200) => {
   if (uri) {
     return `https://${uri.replace('%%', `${size}x${size}`)}`;
   } else {
     return '';
   }
+}
+
+export const getPlaylistList = (userId: number) => {
+  return axios.get<Yandex.Response<Yandex.Playlist[]>>(PLAYLISTS_LIST_URL(userId));
+}
+
+export const getPlaylists = (userId: number, kinds: number[]) => {
+  const data = new FormData();
+
+  data.append('kinds', kinds.join(','));
+
+  return axios.post<Yandex.Response<Yandex.Playlist[]>>(PLAYLISTS_URL(userId), data);
+}
+
+/**
+ * @param trackIds array with elements in format <<trackId:albumId>>
+ */
+export const getTracks = (trackIds: string[]) => {
+  const data = new FormData();
+
+  data.append('track-ids', trackIds.join(','));
+  data.append('with-positions', 'True');
+
+  return axios.post<Yandex.Response<Yandex.Track[]>>(TRACKS_URL, data);
+}
+
+export const getLikes = (userId: number) => {
+  return axios.get<Yandex.Response<Yandex.LikesResponse>>(LIKES_URL(userId));
 }

@@ -2,10 +2,18 @@ export const AUTH_URL = "https://passport.yandex.ru/auth?origin=music_app&retpat
 export const REDIRECT_URL = "https://music.yandex.ru";
 export const OAUTH_TOKEN_URL = 'https://oauth.yandex.ru/token';
 export const LOGIN_INFO_URL = 'https://login.yandex.ru/info?format=json';
-export const HOME_LANDING_URL = 'https://api.music.yandex.net/landing3?blocks=personalplaylists%2Cpromotions%2Cnew-releases%2Cnew-playlists%2Cmixes%2Cchart%2Ccharts%2Cartists%2Calbums%2Cplaylists%2Cplay_contexts%2Cpodcasts';
-export const PERSONAL_PLAYLIST_URL = (uid: number, kind: number) => `https://api.music.yandex.net/users/${uid}/playlists/${kind}`;
-export const DOWNLOAD_INFO_URL = (trackId: number) => `https://api.music.yandex.net/tracks/${trackId}/download-info`;
-export const DIRECT_LINK_URL = (host: string, sign: string, ts: string, path: string) => `https://${host}/get-mp3/${sign}/${ts}${path}`
+
+export const API_URL = 'https://api.music.yandex.net';
+export const HOME_LANDING_URL = `${API_URL}/landing3?blocks=personalplaylists%2Cpromotions%2Cnew-releases%2Cnew-playlists%2Cmixes%2Cchart%2Ccharts%2Cartists%2Calbums%2Cplaylists%2Cplay_contexts%2Cpodcasts`;
+export const PERSONAL_PLAYLIST_URL = (uid: number, kind: number) => `${API_URL}/users/${uid}/playlists/${kind}`;
+export const DOWNLOAD_INFO_URL = (trackId: number) => `${API_URL}/tracks/${trackId}/download-info`;
+export const DIRECT_LINK_URL = (host: string, sign: string, ts: string, path: string) => `https://${host}/get-mp3/${sign}/${ts}${path}`;
+export const PLAYLISTS_LIST_URL = (userId: number) => `${API_URL}/users/${userId}/playlists/list`;
+export const PLAYLISTS_URL = (userId: number) => `${API_URL}/users/${userId}/playlists`;
+export const LIKES_URL = (userId: number) => `${API_URL}/users/${userId}/likes/tracks`;
+export const DISLIKES_URL = (userId: number) => `${API_URL}/users/${userId}/dislikes/tracks`;
+export const TRACKS_URL = `${API_URL}/tracks`;
+
 export const SIGNATURE_KEY = 'XGRlBW9FXlekgbPrRHuSiA';
 export const SESSIONID_GRANT_TYPE = 'sessionid';
 export const CLIENT_ID = '23cabbbdc6cd418abb4b39c32c41195d';

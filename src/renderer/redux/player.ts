@@ -1,61 +1,56 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, Middleware, MiddlewareAPI, PayloadAction } from '@reduxjs/toolkit';
 import { getDirectLink, getPlaylist } from '../api/yandex';
-import { RootState } from './store';
-import store from './store';
+import { AppDispatch, RootState } from './store';
+import * as playerData from '../../common/database/player';
+import { throttle } from 'lodash';
+import logger from '../../common/logger';
+import audio from '../utils/AudioController';
 
-const audio = new Audio();
-
-interface PlayerState {
+export interface PlayerState {
   playing: boolean,
   queue: Yandex.Track[],
-  current?: Yandex.Track,
+  current: Yandex.Track | null,
   shuffle: boolean,
   played: number,
   buffered: number,
   duration: number,
   history: Yandex.Track[],
-  volume: number
+  volume: number,
+  muted: boolean
 }
 
 const initialState: PlayerState = {
   playing: false,
   queue: [],
   history: [],
-  current: undefined,
+  current: null,
   shuffle: true,
   played: 0,
   buffered: 0,
   volume: audio.volume,
   duration: 0,
+  muted: audio.muted
 };
 
-audio.addEventListener('play', () => {
-  store.dispatch(setPlaying(true));
-});
+const saveStateToDb = (store: MiddlewareAPI) => {
+  const userId = store.getState().user.id;
+  logger.debug(`saveStateToDb for user ${userId}`);
+  if (userId) {
+    playerData.update(userId, store.getState().player);
+  }
+};
 
-audio.addEventListener('pause', () => {
-  store.dispatch(setPlaying(false));
-});
+const saveStateToDbThrottled = throttle(saveStateToDb, 2000);
 
-audio.addEventListener('playing', () => {
-  store.dispatch(setPlaying(true));
-});
+export const stateChangeListenerMiddleware: Middleware = store => next => action => {
+  const res = next(action);
 
-audio.addEventListener('ended', () => {
-  store.dispatch(playNext());
-});
+  if ([setQueue.type, setCurrent.type, setHistory.type, setBuffered.type, setVolume.type, setDuration.type, setPlaying.type, setShuffle.type, setPlayed.type].includes(action.type)) {
+    saveStateToDbThrottled(store);
+  }
 
-audio.addEventListener('progress', () => {
-  store.dispatch(setBuffered(audio.buffered.end(0) / audio.duration));
-});
-
-audio.addEventListener('timeupdate', () => {
-  store.dispatch(setPlayed(audio.currentTime / audio.duration));
-});
-
-audio.addEventListener('durationchange', () => {
-  store.dispatch(setDuration(audio.currentTime));
-});
+  return res;
+};
 
 export const play = () => {
   audio.play();
@@ -65,9 +60,9 @@ export const pause = () => {
   audio.pause();
 }
 
-export const seekTo = (val: number) => {
+export const seekTo = (val: number) => (dispatch: AppDispatch) => {
   audio.currentTime = val * audio.duration;
-  store.dispatch(setPlayed(val));
+  dispatch(setPlayed(val));
 }
 
 export const playPlaylist = createAsyncThunk<void, { uid: number, kind: number }, { state: RootState }>(
@@ -103,7 +98,43 @@ export const playNext = createAsyncThunk<void, void, { state: RootState }>(
       console.log(e);
     }
   }
-)
+);
+
+export const syncStateWithAudio = () => async (dispatch: AppDispatch, getState: () => RootState) => {
+  const { volume, played, playing, duration, muted, current } = getState().player;
+
+  if (volume) audio.volume = volume;
+  if (muted) audio.muted = muted;
+
+  if (current) {
+    const link = await getDirectLink(parseInt(current.id));
+    audio.src = link;
+  }
+
+  if (played) {
+    audio.oncanplay = () => { audio.currentTime = played * duration; audio.oncanplay = () => {} };
+  }
+
+  if (playing) {
+    audio.play();
+  }
+}
+
+export const init = () => async (dispatch: AppDispatch, getState: () => RootState) => {
+  const userId = getState().user.id;
+
+  if (!userId) {
+    logger.error('Error to initialize player state, empty user id');
+    return;
+  }
+  const data = await playerData.getByUserId(userId);
+  if (data) {
+    dispatch(setState(data));
+    dispatch(syncStateWithAudio());
+  } else {
+    await playerData.create(userId, getState().player);
+  }
+}
 
 const playerSlice = createSlice({
   name: 'player',
@@ -137,10 +168,27 @@ const playerSlice = createSlice({
       state.volume = action.payload;
       audio.volume = action.payload;
     },
+    setMuted: (state, action: PayloadAction<boolean>) => {
+      state.muted = action.payload;
+      audio.muted = action.payload;
+    },
+    setState: (state, action: PayloadAction<PlayerState>) => {
+      const playerState = action.payload;
+      state.queue = playerState.queue;
+      state.current = playerState.current;
+      state.history = playerState.history;
+      state.buffered = 0;
+      state.duration = playerState.duration;
+      state.muted = playerState.muted;
+      state.shuffle = playerState.shuffle;
+      state.volume = playerState.volume;
+      state.played = playerState.played;
+      state.playing = playerState.playing;
+    }
   }
 });
 
-export const { setQueue, setCurrent, setPlaying, setPlayed, setDuration, setBuffered, setShuffle, setHistory, setVolume } = playerSlice.actions;
+export const { setQueue, setCurrent, setPlaying, setPlayed, setDuration, setBuffered, setShuffle, setHistory, setVolume, setMuted, setState } = playerSlice.actions;
 
 
 export default playerSlice.reducer;
