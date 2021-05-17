@@ -13,6 +13,7 @@ export const init = async () => {
     type: 'sqlite',
     database: path.join(await getUserDataPath(), DB_NAME),
     synchronize: true,
-    entities: [Player, Playlist, PlaylistTrack, Track]
+    entities: [Player, Playlist, PlaylistTrack, Track],
+    dropSchema: true
   });
 };

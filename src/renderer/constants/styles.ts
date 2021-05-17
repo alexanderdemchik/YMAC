@@ -1,0 +1,1 @@
+export const CONTENT_LEFT_RIGHT_MARGIN = 20;

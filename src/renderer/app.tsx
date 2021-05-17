@@ -12,6 +12,7 @@ import { getUserInfo } from './redux/user';
 import { SplashScreen } from './components/splashscreen/SplashScreen';
 import { checkAuth, initialInitialization, initializationAfterLogin } from './redux/app';
 import { play } from './redux/player';
+import { LoadScreen } from './components/loadscreen/LoadScreen';
 
 const styles = (theme: Theme) => ({
   '@global': {
@@ -76,11 +77,14 @@ const App = withStyles(styles)(() => {
   }, []);
 
   return (
-    <Switch>
-      <Route path='/' component={SplashScreen} exact/>
-      <Route path='/login' component={YandexLogin} />
-      <Route path='/main' component={MainLayout} />
-    </Switch>
+    <>
+      <LoadScreen />
+      <Switch>
+        <Route path='/' component={SplashScreen} exact />
+        <Route path='/login' component={YandexLogin} />
+        <Route path='/main' component={MainLayout} />
+      </Switch>
+    </>
   );
 });
 

@@ -5,36 +5,36 @@ export class Track {
   @PrimaryColumn('text')
   id: string;
 
-  @Column('text')
-  realId: string;
+  @Column('text', { nullable: true })
+  realId?: string;
 
-  @Column('text')
-  title: string;
+  @Column('text', { nullable: true })
+  title?: string;
 
-  @Column('simple-json')
-  major: string;
+  @Column('simple-json', { nullable: true })
+  major?: string;
 
-  @Column('text')
-  storageDir: string;
+  @Column('text', { nullable: true })
+  storageDir?: string;
 
-  @Column('bigint')
-  durationMs: number;
+  @Column('bigint', { nullable: true })
+  durationMs?: number;
 
-  @Column('simple-json')
-  normalization: string;
+  @Column('simple-json', { nullable: true })
+  normalization?: string;
 
-  @Column('simple-json')
-  artists: string;
+  @Column('simple-json', { nullable: true })
+  artists?: any;
 
-  @Column('simple-json')
-  albums: string;
+  @Column('simple-json', { nullable: true })
+  albums?: any;
 
-  @Column('text')
-  coverUri: string;
+  @Column('text', { nullable: true })
+  coverUri?: string;
 
-  @Column('text')
-  ogImage: string;
+  @Column('text', { nullable: true })
+  ogImage?: string;
 
-  @Column('text')
-  type: string;
+  @Column('text', { nullable: true })
+  type?: string;
 }

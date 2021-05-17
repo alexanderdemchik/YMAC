@@ -25,6 +25,7 @@ export const handleLogin = createAsyncThunk(
       localStorage.setItem('expiresIn', data.expires_in.toString());
 
       await dispatch(getUserInfo());
+
       await dispatch(initializationAfterLogin());
 
       history.push('/main');

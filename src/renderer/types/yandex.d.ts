@@ -55,27 +55,27 @@ namespace Yandex {
   }
   
   interface Track {
-    albums: Album[],
-    artists: Artist[],
-    available: boolean,
-    availableForPremiumUsers: boolean,
-    availableFullWithoutPermission: boolean,
-    coverUri: string,
-    durationMs: number,
-    fileSize: number,
+    albums?: Album[],
+    artists?: Artist[],
+    available?: boolean,
+    availableForPremiumUsers?: boolean,
+    availableFullWithoutPermission?: boolean,
+    coverUri?: string,
+    durationMs?: number,
+    fileSize?: number,
     id: string,
-    lyricsAvailable: boolean,
-    major: any,
-    normalization: any,
-    ogImage: string,
-    previewDurationMs: number,
-    realId: string,
-    rememberPosition: boolean,
-    storageDir: string,
-    title: string,
-    trackSharingFlag: string,
-    type: string,
-    version: string
+    lyricsAvailable?: boolean,
+    major?: any,
+    normalization?: any,
+    ogImage?: string,
+    previewDurationMs?: number,
+    realId?: string,
+    rememberPosition?: boolean,
+    storageDir?: string,
+    title?: string,
+    trackSharingFlag?: string,
+    type?: string,
+    version?: string
   }
   
   interface TrackWrapper {
@@ -86,19 +86,20 @@ namespace Yandex {
   }
   
   interface Playlist {
-    uid: number,
-    kind: number,
-    title: string,
-    description: string,
-    descriptionFormatted: string,
-    created: string,
-    modified: string,
-    available: boolean,
-    animatedCoverUri: string,
-    ogImage: string,
-    durationMs: number,
-    revision: string,
-    cover: {
+    uid?: number,
+    playlistUuid?: string,
+    kind?: number,
+    title?: string,
+    description?: string,
+    descriptionFormatted?: string,
+    created?: string,
+    modified?: string,
+    available?: boolean,
+    animatedCoverUri?: string,
+    ogImage?: string,
+    durationMs?: number,
+    revision?: number,
+    cover?: {
       type: string,
       dir: string,
       version: string,
@@ -106,12 +107,12 @@ namespace Yandex {
       custom: boolean,
       itemsUri?: string[]
     },
-    playCounter: {
+    playCounter?: {
       value: number,
       description: string,
       updated: boolean
     }
-    tracks: TrackWrapper[]
+    tracks?: TrackWrapper[] | Track[]
   }
   interface PersonalPlaylistEntityData {
     type: string,

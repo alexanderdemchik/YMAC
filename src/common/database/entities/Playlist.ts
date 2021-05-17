@@ -1,31 +1,37 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { Track } from "./Track";
 
 @Entity()
 export class Playlist {
-  @PrimaryColumn('text')
-  playlistUuid: string;
+  @PrimaryGeneratedColumn({ type: 'int' })
+  id: number
 
-  @Column('bigint')
+  @Column('text', { nullable: true })
+  playlistUuid?: string
+
+  @Column('int', { nullable: true })
   uid: number
 
-  @Column('text')
-  title: string;
+  @Column('text', { nullable: true })
+  title?: string;
 
-  @Column('bigint')
-  revision: number;
+  @Column('bigint', { nullable: true })
+  revision?: number;
 
-  @Column('int')
+  @Column('int', { nullable: true })
   kind: number;
 
-  @Column('bigint')
-  trackCount: number;
+  @Column('bigint', { nullable: true })
+  trackCount?: number;
 
-  @Column('text')
-  ogImage: string;
+  @Column('text', { nullable: true })
+  ogImage?: string;
 
-  @Column('simple-json')
-  cover: string
+  @Column('simple-json', { nullable: true })
+  cover?: any
 
-  tracks: Track[]
+  @Column('text', { nullable: true })
+  description?: string
+
+  tracks?: Track[]
 }

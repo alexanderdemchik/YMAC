@@ -5,6 +5,9 @@ import toolbar from './toolbar';
 import login from './login';
 import sidebar from './sidebar';
 import home from './home';
+import app from './app';
+import collection from './collection';
+import playlist from './playlist';
 import player, { stateChangeListenerMiddleware } from './player';
 import { initialize as initializeAudio } from '../utils/AudioController';
 
@@ -15,7 +18,10 @@ const store = configureStore({
     login,
     sidebar,
     home,
-    player
+    player,
+    app,
+    collection,
+    playlist
   }),
   devTools: process.env.NODE_ENV === 'development',
   middleware: [stateChangeListenerMiddleware, ...getDefaultMiddleware()] as const

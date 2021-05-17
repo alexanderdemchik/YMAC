@@ -9,8 +9,8 @@ export default createMuiTheme({
     type: 'dark',
     primary: {
       main: '#FFCC00',
-      light: 'rgb(77, 171, 245)',
-      dark: 'rgb(23, 105, 170)',
+      light: '#ffff50',
+      dark: '#c79c00',
       contrastText: '#000',
     },
     secondary: {

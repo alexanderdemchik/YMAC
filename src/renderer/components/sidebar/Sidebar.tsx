@@ -1,16 +1,33 @@
 import { Backdrop, ButtonBase, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme, useMediaQuery, fade } from '@material-ui/core';
 import React, { useState } from 'react';
-import { LibraryMusicSharp as LibraryMusicSharpIcon, DehazeSharp as DehazeIcon } from '@material-ui/icons';
+import { LibraryMusicSharp as LibraryMusicSharpIcon, DehazeSharp as DehazeIcon, Favorite as FavoriteIcon } from '@material-ui/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { setCollapsed } from '../../redux/sidebar';
 import history from '../../history';
+import { LIKE_PLAYLIST_KIND } from '../../../common/database/playlist';
+import { Link } from 'react-router-dom';
+import { PlaylistLink } from '../common/PlaylistLink';
 
-const PAGES = [
+interface PageDescription {
+  id: string,
+  icon: JSX.Element,
+  title: string,
+  link: string
+}
+
+const PAGES: PageDescription[] = [
   {
+    id: 'main',
     icon: <LibraryMusicSharpIcon />,
     title: 'Main',
     link: '/main'
+  },
+  {
+    id: 'favorite',
+    icon: <FavoriteIcon />,
+    title: 'Favorite',
+    link: `/main/users/{uid}/playlists/${LIKE_PLAYLIST_KIND}`
   },
 ];
 
@@ -64,10 +81,21 @@ const useStyles = makeStyles((theme) => ({
 export const Sidebar = () => {
   const classes = useStyles();
   const { collapsed } = useSelector((state: RootState) => state.sidebar);
+  const { id: userId } = useSelector((state: RootState) => state.user);
+  const { likesPlaylist } = useSelector((state: RootState) => state.collection);
+
   const dispatch = useDispatch();
 
   const isXs = useMediaQuery<Theme>(theme=> theme.breakpoints.down('xs'));
   const isSm = useMediaQuery<Theme>(theme=> theme.breakpoints.down('sm'));
+  
+  const formatLink = (pageDesc: PageDescription) => {
+    if (pageDesc.id === 'favorite') {
+      return pageDesc.link.replace('{uid}', userId + '');
+    } else {
+      return pageDesc.link;
+    }
+  }
 
   return (
     <>
@@ -79,12 +107,14 @@ export const Sidebar = () => {
       <List className={classes.list}>
       {
         PAGES.map(el => (
-          <ListItem button className={classes.listItem} onClick={() => {history.push(el.link)}}>
-            <ListItemIcon>
-              {el.icon}
-            </ListItemIcon>
-            <ListItemText primary={el.title} />
-          </ListItem>
+          <PlaylistLink to={formatLink(el)} playlist={likesPlaylist!}>
+            <ListItem button className={classes.listItem}>
+              <ListItemIcon>
+                {el.icon}
+              </ListItemIcon>
+              <ListItemText primary={el.title} />
+            </ListItem>
+          </PlaylistLink>
         ))
       }
       </List>

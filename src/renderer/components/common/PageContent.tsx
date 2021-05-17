@@ -6,7 +6,8 @@ const useStyles = makeStyles((theme) => ({
     padding: 20,
     marginTop: 78,
     height: 'calc(100vh - 78px - 56px)',
-    overflow: 'auto',
+    overflow: 'overlay!important',
+    overflowX: 'hidden',
     marginBottom: 56,
     maxWidth: 1400,
     marginLeft: 'auto',
@@ -14,12 +15,17 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const PageContent = ({ children }: { children: any }) => {
+interface PageContentProps {
+  children: any,
+  onScroll: any
+}
+
+export const PageContent = React.forwardRef<HTMLDivElement, PageContentProps>(({ children, onScroll }, ref) => {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} onScroll={onScroll} ref={ref}>
       {children}
     </div>
   )
-}
+});

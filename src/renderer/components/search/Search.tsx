@@ -7,6 +7,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     position: 'absolute',
     display: 'flex',
+    zIndex: 2,
     left: 0,
     right: 0,
     top: 30
