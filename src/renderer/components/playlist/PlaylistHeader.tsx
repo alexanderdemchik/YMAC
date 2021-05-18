@@ -3,14 +3,14 @@ import React from 'react';
 import { LIKE_PLAYLIST_KIND } from '../../../common/database/playlist';
 import { Image } from '../common/Image';
 
-const PLAYLIST_HEADER_HEIGHT = 280;
+export const PLAYLIST_HEADER_HEIGHT = 282;
 
 const useStyles = makeStyles((theme) => ({
   root: {
     zIndex: 3,
     paddingTop: 30,
-    paddingBottom: 30,
     height: PLAYLIST_HEADER_HEIGHT,
+    minHeight: PLAYLIST_HEADER_HEIGHT,
     maxHeight: PLAYLIST_HEADER_HEIGHT,
     position: 'relative'
   },

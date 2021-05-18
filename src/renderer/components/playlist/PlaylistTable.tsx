@@ -2,11 +2,10 @@ import { Grid, GridSize, makeStyles } from '@material-ui/core';
 import { WatchLaterOutlined as ClockIcon } from '@material-ui/icons';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { getScrollParent } from '../../utils/getScrollParant';
-import { List, WindowScroller } from 'react-virtualized';
-import 'react-virtualized/styles.css'; // only needs to be imported once
+import { AutoSizer, List, WindowScroller } from 'react-virtualized';
 const useStyles = makeStyles((theme) => ({
   root: {
-    position: 'relative'
+    position: 'relative',
   },
   header: {
     padding: '10px 0',
@@ -14,40 +13,50 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export interface ColumnDescription {
-  title: string | JSX.Element,
-  field: string,
+export interface ColumnDescription<T> {
+  title: JSX.Element | string,
+  fieldRenderer: (row: T) => JSX.Element | string | undefined,
   size: GridSize,
 }
 
-interface HeaderProps {
-  columns: ColumnDescription[]
+interface HeaderProps<T> {
+  columns: ColumnDescription<T>[]
 }
 
-export const Header = ({ columns }: HeaderProps) => {
+export const Header = <T, >({ columns }: HeaderProps<T>) => {
   const classes = useStyles();
   return <Grid container className={classes.header}>
     {
       columns.map((col) => (
         <Grid item xs={col.size}>
-          {col.title}
+          { col.title }
         </Grid>
       ))
     }
   </Grid>
 }
 
-interface TableProps {
-  columns: ColumnDescription[];
-  data: any[]
+interface RowRendererProps<T> {
+  row: T,
+  index: number,
+  key: any,
+  style: any,
+  columns: ColumnDescription<T>[]
+}
+interface TableProps<T> {
+  columns: ColumnDescription<T>[],
+  data: T[],
+  rowRenderer?: ({row, index, key, style, columns}: RowRendererProps<T>) => JSX.Element
 }
 
-export const Table = ({ columns, data = [] }: TableProps) => {
+const TableFC = <T,>({ columns, data = [] }: TableProps<T>) => {
   const ref = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLDivElement | null>(null);
   const headerSpacer = useRef<HTMLDivElement | null>(null);
   const [scrollParentRef, setScrollParentRef] = useState<HTMLElement | null>(null);
   const classes = useStyles();
+
+  const rowRenderer = useCallback(({ key, index, style }) => <Item key={key} index={index} style={style} columns={columns} row={data[index]}/>, [])
 
   const onScroll = useCallback(() => {
     if (scrollParentRef != null) {
@@ -57,11 +66,8 @@ export const Table = ({ columns, data = [] }: TableProps) => {
       const tableRect = ref.current!.getBoundingClientRect();
       const scrollParentRect = scrollParent.getBoundingClientRect();
   
-      const offset = ref.current!.offsetTop - scrollParentRect.top - scrollTop; // 80 - header height x2
-      console.log(ref.current!.offsetTop)
-      console.log( scrollParentRect.top)
-      console.log(scrollTop)
-      console.log(offset)
+      const offset = ref.current!.offsetTop - scrollParentRect.top - scrollTop;
+  
       if (offset < 0) {
         headerRef.current!.style.position = 'fixed';
         headerRef.current!.style.top = `150px`;
@@ -70,7 +76,7 @@ export const Table = ({ columns, data = [] }: TableProps) => {
         headerSpacer.current!.style.display = 'inherit';
         
       } else {
-        headerRef.current!.style.position = 'relative';
+        headerRef.current!.style.position = 'unset';
         headerRef.current!.style.top = '0px';
         headerRef.current!.style.left = '0px';
         headerRef.current!.style.right = '0px';
@@ -91,55 +97,69 @@ export const Table = ({ columns, data = [] }: TableProps) => {
       scrollParent.removeEventListener('scroll', onScroll);
     };
   }, [ref, onScroll]);
+
+  useEffect(() => {
+    console.log('data')
+  }, [data])
+  console.log('table')
   return (
     <div ref={ref} className={classes.root}>
-      <div ref={headerRef}>
+      <div ref={headerRef} style={{zIndex: 2}}>
         <Header columns={columns} />
       </div>
-      <div ref={headerSpacer} style={{height: 40, display: 'none'}}/>
+      <div ref={headerSpacer} style={{height: 40, display: 'none'}} />
         {
             scrollParentRef != null && (
               <WindowScroller scrollElement={scrollParentRef}>
-              {({ height, isScrolling, onChildScroll, scrollTop }) => (
-                <List
-                  autoHeight
-                  height={height}
-                  isScrolling={isScrolling}
-                  onScroll={onChildScroll}
-                  rowCount={data.length}
-                  rowHeight={20}
-                  rowRenderer={({index, key, style}) => <div key={key} style={style}>{index}</div>}
-                  scrollTop={scrollTop}
-                  width={100}
-                  overscanRowCount={100}
-                />
-              )}
-           </WindowScroller>
+                {({ height, isScrolling, onChildScroll, scrollTop }) => (
+                  <AutoSizer disableHeight>
+                    {({ width }) => (
+                      <List
+                        autoHeight
+                        height={height}
+                        isScrolling={isScrolling}
+                        onScroll={onChildScroll}
+                        rowCount={data.length}
+                        rowHeight={20}
+                        scrollTop={scrollTop}
+                        width={width}
+                      >
+                        {rowRenderer}
+                      </List>
+                    )}
+                  </AutoSizer>
+                )}
+            </WindowScroller>
             )
           }
     </div>
   );
 }
 
-interface ItemProps {
-  data: any,
-  columns: ColumnDescription[]
+export const Table = React.memo(TableFC) as typeof TableFC;
+
+interface ItemProps<T> {
+  row: any,
+  key: any,
+  index: number,
+  style: any,
+  columns: ColumnDescription<T>[]
 }
 
-export const Item = ({data, columns}: ItemProps) => {
-  const [hovered, setHovered] = useState(false);
-  
+export const Item = <T, >({ row, key, index, style, columns }: ItemProps<T>) => {
   return (
-    <Grid container>
-      {
-        columns.map(col => {
-          return (
-            <Grid item xs={col.size}>
-              {col.field(data)}
-            </Grid>
-          );
-        })
-      }
-    </Grid>
+    <div style={style} key={key}>
+      <Grid container >
+        {
+          columns.map((col, i) => {
+            return (
+              <Grid item xs={col.size} key={i}>
+                {col.fieldRenderer(row)}
+              </Grid>
+            );
+          })
+        }
+      </Grid>
+    </div>
   )
 }

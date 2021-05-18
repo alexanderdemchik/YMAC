@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { LIKE_PLAYLIST_KIND } from '../../../common/database/playlist';
@@ -8,11 +8,11 @@ import { RootState } from '../../redux/store';
 import { PageContent } from '../common/PageContent';
 import { Search } from '../search/Search';
 import FavoriteCoverSrc from '../../assets/imloving.png'
-import { PlaylistHeader, PlaylistStickyHeader } from './PlaylistHeader';
+import { PlaylistHeader, PlaylistStickyHeader, PLAYLIST_HEADER_HEIGHT } from './PlaylistHeader';
 import { CONTENT_LEFT_RIGHT_MARGIN } from '../../constants/styles';
-import { Header as DataHeader, Table, ColumnDescription} from './PlaylistTable';
+import { Header as DataHeader, Table, ColumnDescription } from './PlaylistTable';
 import { ScheduleOutlined } from '@material-ui/icons';
-
+import { msToTime } from '../../utils/msToTime';
 
 export const PLAYLIST_TOP_BACKGROUND_HEIGHT = 380;
 
@@ -83,28 +83,30 @@ export const Playlist = () => {
     }
   }
 
-  const columns: ColumnDescription[] = [
+  const columns: ColumnDescription<Yandex.Track>[] = useMemo(() => [
     {
       title: 'TRACK',
       size: 5,
-      field: (row: Yandex.Track) => row.title 
+      fieldRenderer: (row: Yandex.Track) => row.title 
     },
     {
       title: 'ARTIST',
       size: 3,
-      field: (row: Yandex.Track) => row.artists!.map((el) => el.name).join(',')
+      fieldRenderer: (row: Yandex.Track) => row.artists!.map((el) => el.name).join(',')
     },
     {
       title: 'ALBUM',
       size: 3,
-      field:  (row: Yandex.Track) => ''
+      fieldRenderer:  (row: Yandex.Track) => {
+        return row.albums!.map((el) => el.title).join(',');
+      }
     },
     {
       title: <div><ScheduleOutlined fontSize='small'/></div>,
       size: 1,
-      field: (row: Yandex.Track) => row.durationMs
+      fieldRenderer: (row: Yandex.Track) => msToTime(row.durationMs)
     }
-  ];
+  ], []);
 
   const onScroll = useCallback(e => {
     setScrolled(e.target.scrollTop);
@@ -120,7 +122,7 @@ export const Playlist = () => {
 
   return (
     <div className={classes.root}>
-      <div className={classes.playlistTopBackground} style={{height: `${topHeight}px`}}>
+      <div className={classes.playlistTopBackground} style={{height: `${topHeight}px`, minHeight: `${topHeight}px`, maxHeight: `${topHeight}px`}}>
         <div style={{backgroundImage: `url(${getCoverUri()})`}} />
         {
           topHeight === 150 && (
@@ -133,13 +135,12 @@ export const Playlist = () => {
       <Search />
       <PageContent onScroll={onScroll}>
         {
-          topHeight === 150 ? <><div style={{height: 280, zIndex: 3}} /><div style={{height: 280, zIndex: 3, position: 'absolute'}} /></> : <div style={{position: 'relative', transform: `translateY(${-scrolled / 5}px)`, zIndex: 3}}>
+          topHeight === 150 ? <><div style={{height: PLAYLIST_HEADER_HEIGHT, minHeight: PLAYLIST_HEADER_HEIGHT,  zIndex: 3}} /><div style={{height: PLAYLIST_HEADER_HEIGHT, zIndex: 3, position: 'absolute'}} /></> : <div style={{position: 'relative', transform: `translateY(${-scrolled / 5}px)`, zIndex: 3}}>
             <PlaylistHeader coverUri={getCoverUri()} playlist={playlist} />
           </div>
         }
         <div>
-        <Table columns={columns} data={playlist.tracks} />
-         
+          <Table columns={columns} data={playlist.tracks as Yandex.Track[]} />
         </div>
       </PageContent>
     </div>

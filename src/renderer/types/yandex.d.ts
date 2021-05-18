@@ -46,7 +46,9 @@ namespace Yandex {
   }
   
   interface Album {
-  
+    id: number,
+    title: string,
+    version: string
   }
   
   interface Artist {

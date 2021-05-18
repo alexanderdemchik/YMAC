@@ -13,6 +13,7 @@ import { SplashScreen } from './components/splashscreen/SplashScreen';
 import { checkAuth, initialInitialization, initializationAfterLogin } from './redux/app';
 import { play } from './redux/player';
 import { LoadScreen } from './components/loadscreen/LoadScreen';
+import 'react-virtualized/styles.css';
 
 const styles = (theme: Theme) => ({
   '@global': {

@@ -84,8 +84,8 @@ const registerExtensions = async () => {
   const reactDevToolsPath = path.join(extensionsDir, REACT_DEV_TOOLS_FOLDER);
   const reduxDevToolsPath = path.join(extensionsDir, REDUX_DEV_TOOLS_FOLDER);
 
-  await session.defaultSession.loadExtension(reactDevToolsPath, {allowFileAccess: true});
-  await session.defaultSession.loadExtension(reduxDevToolsPath);
+  // await session.defaultSession.loadExtension(reactDevToolsPath, {allowFileAccess: true});
+  // await session.defaultSession.loadExtension(reduxDevToolsPath);
 }
 
 /**
