@@ -16,7 +16,7 @@ export interface PlayerState {
   duration: number,
   history: Yandex.Track[],
   volume: number,
-  muted: boolean
+  muted: boolean,
 }
 
 const initialState: PlayerState = {
@@ -61,8 +61,10 @@ export const pause = () => {
 }
 
 export const seekTo = (val: number) => (dispatch: AppDispatch) => {
-  audio.currentTime = val * audio.duration;
-  dispatch(setPlayed(val));
+  if (val) {
+    audio.currentTime = val * audio.duration;
+    dispatch(setPlayed(val));
+  }
 }
 
 export const playPlaylist = createAsyncThunk<void, { uid: number, kind: number }, { state: RootState }>(
@@ -71,10 +73,24 @@ export const playPlaylist = createAsyncThunk<void, { uid: number, kind: number }
 
     const playlist = (await getPlaylist(uid, kind)).data.result;
     
-    dispatch(setQueue(playlist.tracks.map(wrapper => wrapper.track)));
+    const tracks = playlist.tracks! as Yandex.TrackWrapper[];
+    dispatch(setQueue(tracks.map((wrapper) => wrapper.track)));
     dispatch(playNext());
   }
 );
+
+export const playTrack = (track: Yandex.Track, queue: Yandex.Track[]) => async (dispatch: AppDispatch, getState: () => RootState) => {
+  if (queue) {
+    dispatch(setQueue(queue));
+  }
+
+  dispatch(setCurrent(track));
+  
+  const link = await getDirectLink(parseInt(track.id));
+
+  audio.src = link;
+  audio.play();
+}
 
 export const playNext = createAsyncThunk<void, void, { state: RootState }>(
   'player/playNext',

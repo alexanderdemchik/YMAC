@@ -11,6 +11,8 @@ export const DIRECT_LINK_URL = (host: string, sign: string, ts: string, path: st
 export const PLAYLISTS_LIST_URL = (userId: number) => `${API_URL}/users/${userId}/playlists/list`;
 export const PLAYLISTS_URL = (userId: number) => `${API_URL}/users/${userId}/playlists`;
 export const LIKES_URL = (userId: number) => `${API_URL}/users/${userId}/likes/tracks`;
+export const REMOVE_LIKES_URL = (userId: number) => `${LIKES_URL(userId)}/remove`;
+export const ADD_LIKES_URL = (userId: number) => `${LIKES_URL(userId)}/add-multiple`;
 export const DISLIKES_URL = (userId: number) => `${API_URL}/users/${userId}/dislikes/tracks`;
 export const TRACKS_URL = `${API_URL}/tracks`;
 

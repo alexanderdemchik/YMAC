@@ -7,16 +7,23 @@ const useStyles = makeStyles((theme) => ({
     '&:hover': {
       backgroundColor: theme.palette.action.hover
     }
+  },
+  circle: {
+    borderRadius: '50%'
   }
 }));
 
-interface IconButtonProps extends ButtonBaseProps {}
+export interface IconButtonProps extends Omit<ButtonBaseProps, 'component'> {
+  circle?: boolean,
+  component?: string
+}
 
-export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(({children, className = '', ...props}, ref) => {
+export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(({children, className = '', circle = false, component = 'button', ...props}, ref) => {
   const classes = useStyles();
 
   return (
-    <ButtonBase className={`${classes.root} ${className}`} {...props} ref={ref}>
+    //@ts-ignore https://github.com/mui-org/material-ui/issues/15827
+    <ButtonBase className={`${classes.root} ${className} ${circle ? classes.circle : ''}`} {...props} ref={ref} component={component}>
       {children}
     </ButtonBase>
   );

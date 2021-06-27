@@ -3,12 +3,15 @@ import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    position: 'relative',
     padding: 20,
     marginTop: 78,
     height: 'calc(100vh - 78px - 56px)',
     overflow: 'overlay!important',
     overflowX: 'hidden',
     marginBottom: 56,
+  },
+  layout: {
     maxWidth: 1400,
     marginLeft: 'auto',
     marginRight: 'auto'
@@ -24,8 +27,12 @@ export const PageContent = React.forwardRef<HTMLDivElement, PageContentProps>(({
   const classes = useStyles();
 
   return (
-    <div className={classes.root} onScroll={onScroll} ref={ref}>
-      {children}
-    </div>
+    <>
+      <div className={classes.root} onScroll={onScroll} ref={ref}>
+        <div className={classes.layout}>
+          {children}
+        </div>
+      </div>
+    </>
   )
 });

@@ -49,6 +49,7 @@ const styles = (theme: Theme) => ({
     },
     '*::-webkit-scrollbar-thumb': {
       width: 5,
+      minHeight: 80,
       backgroundClip: 'padding-box',
       border: '3px solid rgba(0,0,0,0)',
       borderTop: '10px solid rgba(0,0,0,0)',

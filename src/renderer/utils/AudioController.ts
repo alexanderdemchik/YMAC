@@ -27,7 +27,9 @@ export const initialize = (storeArg: Store) => {
   });
   
   audio.addEventListener('timeupdate', () => {
-    store.dispatch(setPlayed(audio.currentTime / audio.duration));
+    if (audio.duration && audio.currentTime) {
+      store.dispatch(setPlayed(audio.currentTime / audio.duration));
+    }
   });
   
   audio.addEventListener('durationchange', () => {

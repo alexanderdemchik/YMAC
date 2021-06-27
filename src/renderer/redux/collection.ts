@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import logger from "../../common/logger";
-import { getLikes, getTracks } from "../api/yandex";
+import * as API from "../api/yandex";
 import { setInitialDataLoading } from "./app";
 import { AppDispatch, RootState } from "./store";
 import * as playlistDb from '../../common/database/playlist';
-import * as tracksDb from '../../common/database/tracks';
+import * as collectionDb from '../../common/database/collection';
 
 interface CollectionState {
   likesPlaylist: Yandex.Playlist | null,
@@ -16,7 +16,7 @@ export const initialCollectionSync = () => async (dispatch: AppDispatch, getStat
 
   dispatch(setInitialDataLoading(true));
 
-  const likes = (await getLikes(userId)).data;
+  const likes = (await API.getLikes(userId)).data;
 
   const likesPlaylist = await playlistDb.createIfNeed({
     uid: userId,
@@ -24,16 +24,14 @@ export const initialCollectionSync = () => async (dispatch: AppDispatch, getStat
     revision: likes.result.library.revision
   });
 
-  const likesIds = likes.result.library.tracks.map((el) => el.id);
-
   const tracksToDownload = likes.result.library.tracks.map((el) => {
     return `${el.id}:${el.albumId}`;
   });
 
-  const tracks = (await getTracks(tracksToDownload)).data.result;
+  const tracks = (await API.getTracks(tracksToDownload)).data.result;
 
-  await tracksDb.create(tracks);
-  await playlistDb.assignTracksToPlaylist(likesIds, likesPlaylist.uid, likesPlaylist.kind);
+
+  await collectionDb.addTracksLikes(likesPlaylist.uid, tracks);
 
   dispatch(setInitialDataLoading(false));
 }
@@ -50,7 +48,34 @@ export const initialize = () => async (dispatch: AppDispatch, getState: () => Ro
   }
 }
 
+export const likeTrack = (track: Yandex.Track) => async (dispatch: AppDispatch, getState: () => RootState) => {
+  const uid = getState().user.id!;
+  const likes = getState().collection.likes;
 
+  try {
+    await API.likeTrack(uid, [`${track.id}:${extractAlbumId(track.albums)}`]);
+
+    dispatch(setLikes([...likes, track.id]));
+
+    await collectionDb.addTracksLikes(uid, [track])
+  } catch (e) {
+    logger.error('%o', e);
+  }
+}
+
+export const removeTrackLike = (id: string) => async (dispatch: AppDispatch, getState: () => RootState) => {
+  const uid = getState().user.id!;
+  const likes = getState().collection.likes;
+
+  try {
+    await API.removeTracksLikes(uid, [id]);
+
+    dispatch(setLikes(likes.filter(el => el !== id)));
+    await collectionDb.removeTracksLikes(uid, [id]);
+  } catch (e) {
+    logger.error('%o', e);
+  }
+}
 
 const collectionSlice = createSlice({
   name: 'collection',
@@ -70,6 +95,11 @@ const collectionSlice = createSlice({
  
   }
 });
+
+const extractAlbumId = (albums?: Yandex.Album[]) => {
+  if (!albums || !albums[0]) return null;
+  return albums[0].id;
+}
 
 export const { setLikes, setLikesPlaylist } = collectionSlice.actions;
 

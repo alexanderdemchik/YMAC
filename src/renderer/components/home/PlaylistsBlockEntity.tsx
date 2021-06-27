@@ -83,7 +83,7 @@ export const PlaylistsBlockEntity = ({ entity, onPlayClick } : PlaylistsBlockEnt
       </div>
       <div>
         {data.title}<br/>
-        <span dangerouslySetInnerHTML={{ __html: data.descriptionFormatted }}/>
+        <span dangerouslySetInnerHTML={{ __html: data.descriptionFormatted! }}/>
         </div>
     </div>
   );
